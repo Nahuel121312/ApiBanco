@@ -17,6 +17,7 @@ public class Tarjeta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTarjeta;
     private String numeroDeTarjeta;
+    private boolean estado;
 
     @Enumerated(EnumType.STRING)
     private TipoTarjeta tipoTarjeta;
@@ -25,19 +26,10 @@ public class Tarjeta {
     private LocalDate fechaVencimiento;
 
     private double limiteCredito;
-    @ManyToOne
-    @JoinColumn(name = "cliente_id")
-    @JsonBackReference(value = "cliente-tarjetas")
-    private Cliente cliente;
 
-    public Tarjeta (String numeroDeTarjeta, TipoTarjeta tipoTarjeta, double limiteCredito, Cliente cliente){
-        this.numeroDeTarjeta = numeroDeTarjeta;
-        this.tipoTarjeta = tipoTarjeta;
-        this.limiteCredito = limiteCredito;
-        this.cliente = cliente;
-    }
-    @PrePersist
-    public void prePersist(){
-        this.fechaVencimiento = LocalDate.now().plusYears(6).plusMonths(8);
-    }
+    @ManyToOne
+    @JoinColumn(name = "cuenta_id")
+    @JsonBackReference(value = "cuenta-tarjetas")
+    private Cuenta cuenta;
+
 }

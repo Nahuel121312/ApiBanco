@@ -1,7 +1,6 @@
 package com.apiBanco.apiBanco.models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Generated;
 import lombok.Getter;
@@ -14,6 +13,7 @@ import java.util.List;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "clienteId")
 public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,34 +25,13 @@ public class Cliente {
     private String email;
     private String telefono;
     private String direccion;
+    private boolean estado;
     @JsonFormat(shape = JsonFormat.Shape.STRING , pattern = "yyyy/MM/dd")
     private LocalDateTime fechaRegistro;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "cliente-cuentas")
-    private List<Cuenta> cuentas = new ArrayList<>();
+    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Cuenta cuenta;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "cliente-tarjetas")
-    private List<Tarjeta> tarjetas = new ArrayList<>();
-
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "cliente-prestamos")
-    private List<Prestamo> prestamos = new ArrayList<>();
-
-    public Cliente (String nombre, String apellido, String email, String telefono, String direccion, String dni){
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.email = email;
-        this.telefono = telefono;
-        this.direccion = direccion;
-        this.fechaRegistro = LocalDateTime.now();
-        this.dni = dni;
-    }
-    @PrePersist
-    public void prePersist(){
-        this.fechaRegistro = LocalDateTime.now();
-    }
 
 
 }

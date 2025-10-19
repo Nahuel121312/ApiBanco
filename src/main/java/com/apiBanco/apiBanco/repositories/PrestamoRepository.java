@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface PrestamoRepository extends JpaRepository<Prestamo, Long> {
 
-
+    List<Prestamo> findByEstadoTrue();
 }

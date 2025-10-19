@@ -1,15 +1,19 @@
 package com.apiBanco.apiBanco.controlers;
 
+import com.apiBanco.apiBanco.dtos.transaccion.TransaccionRequestDTO;
+import com.apiBanco.apiBanco.dtos.transaccion.TransaccionResponseDTO;
 import com.apiBanco.apiBanco.models.Cuenta;
 import com.apiBanco.apiBanco.models.Transaccion;
+import com.apiBanco.apiBanco.models.enums.TipoTransaccion;
 import com.apiBanco.apiBanco.services.CuentaService;
 import com.apiBanco.apiBanco.services.TransaccionService;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/transacciones")
 public class TransaccionController {
@@ -23,38 +27,25 @@ public class TransaccionController {
     }
 
     @GetMapping
-    public List<Transaccion> listarTransacciones(){
-        return transaccionService.listarTransacciones();
+    public ResponseEntity<List<TransaccionResponseDTO>> listarTransacciones(){
+        List<TransaccionResponseDTO> listarTransacciones = transaccionService.listarTransacciones();
+        return ResponseEntity.ok(listarTransacciones);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Transaccion> buscarTransaccion(@PathVariable Long id){
-        return transaccionService.obtenerTransaccion(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<TransaccionResponseDTO> buscarTransaccion(@PathVariable Long id){
+        TransaccionResponseDTO transaccionResponse = transaccionService.obtenerTransaccion(id);
+        return ResponseEntity.ok(transaccionResponse);
     }
 
    @PostMapping
-   public Transaccion guardarTransaccion(@RequestBody Transaccion transaccion){
-
-        Cuenta cuentaOrigen = cuentaService.buscarCuentaPorId(transaccion.getCuentaOrigen().getIdCuenta())
-                .orElseThrow(()-> new RuntimeException("Cuenta origen no encontrada"));
-
-        Cuenta cuentaDestino = cuentaService.buscarCuentaPorId(transaccion.getCuentaDestino().getIdCuenta())
-                .orElseThrow(()-> new RuntimeException("Cuenta destino no encontrada"));
-        transaccion.setCuentaOrigen(cuentaOrigen);
-        transaccion.setCuentaDestino(cuentaDestino);
-        return transaccionService.guardarTransaccion(transaccion);
+   public TransaccionResponseDTO crearTransaccion(@Valid @RequestBody TransaccionRequestDTO transaccionRequest){
+        return transaccionService.crearTransaccion(transaccionRequest);
    }
-
-   @PutMapping("{id}")
 
    @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarTransaccion(@PathVariable Long id){
-            if(transaccionService.obtenerTransaccion(id).isPresent()){
-                transaccionService.eliminarTransaccion(id);
-                return ResponseEntity.noContent().build();
-            }
+        transaccionService.eliminarTransaccion(id);
             return ResponseEntity.notFound().build();
    }
 

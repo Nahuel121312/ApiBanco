@@ -1,30 +1,31 @@
 package com.apiBanco.apiBanco.controlers;
 
+import com.apiBanco.apiBanco.dtos.prestamo.PrestamoRequestDTO;
+import com.apiBanco.apiBanco.dtos.prestamo.PrestamoResponseDTO;
 import com.apiBanco.apiBanco.models.Cliente;
 import com.apiBanco.apiBanco.models.Prestamo;
 import com.apiBanco.apiBanco.services.ClienteService;
 import com.apiBanco.apiBanco.services.PrestamoService;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/prestamos")
 public class PrestamoController {
 
     private final PrestamoService prestamoService;
-    private final ClienteService clienteService;
 
-    public PrestamoController(PrestamoService prestamoService, ClienteService clienteService){
+    public PrestamoController(PrestamoService prestamoService){
         this.prestamoService = prestamoService;
-        this.clienteService = clienteService;
     }
 
     @GetMapping
-    public List<Prestamo> listarPrestamos(){
+    public List<PrestamoResponseDTO> listarPrestamos(){
         return prestamoService.listarPrestamos();
     }
 
@@ -36,34 +37,23 @@ public class PrestamoController {
     }
 
     @PostMapping
-    public Prestamo guardarPrestamo(@RequestBody Prestamo prestamo){
+    public ResponseEntity<PrestamoResponseDTO> crearPrestamo(@Valid @RequestBody PrestamoRequestDTO prestamoRequest){
+        PrestamoResponseDTO prestamoResponse = prestamoService.crearPrestamo(prestamoRequest);
 
-        Long clienteId = prestamo.getCliente().getClienteId();
-        Cliente cliente = clienteService.obtenerCliente(clienteId)
-                .orElseThrow(()-> new RuntimeException("Cliente no encontrado"));
-
-        prestamo.setCliente(cliente);
-        return prestamoService.guardarPrestamo(prestamo);
+        return ResponseEntity.ok(prestamoResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Prestamo> actualizarPrestamo(@PathVariable Long id, @RequestBody Prestamo prestamo){
-        return prestamoService.buscarPrestamo(id)
-                .map(p ->{
-                    p.setMonto(prestamo.getMonto());
-                    p.setTipoEstado(prestamo.getTipoEstado());
-                    return ResponseEntity.ok(prestamoService.guardarPrestamo(p));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PrestamoResponseDTO> actualizarPrestamo(@PathVariable Long id,@Valid @RequestBody PrestamoRequestDTO prestamoRequest ){
+        PrestamoResponseDTO prestamoResponse = prestamoService.actualizarPrestamo(id, prestamoRequest);
+
+        return ResponseEntity.ok(prestamoResponse);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarPrestamo(@PathVariable Long id){
-        if(prestamoService.buscarPrestamo(id).isPresent()){
-            prestamoService.eliminarPrestamo(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        prestamoService.eliminarPrestamo(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

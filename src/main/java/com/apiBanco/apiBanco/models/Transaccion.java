@@ -15,6 +15,7 @@ public class Transaccion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTransaccion;
     private LocalDateTime fecha;
+    private boolean estado;
 
     @Enumerated(EnumType.STRING)
     private TipoTransaccion tipoTransaccion;
@@ -31,12 +32,4 @@ public class Transaccion {
     @JsonBackReference(value = "cuenta-transacciones-recibidas")
     private Cuenta cuentaDestino;
 
-
-    public Transaccion(TipoTransaccion tipoTransaccion, double monto, String detalle, Cuenta cuentaOrigen, Cuenta cuentaDestino){
-        this.tipoTransaccion = tipoTransaccion;
-        this.monto = monto;
-        this.detalle = detalle;
-        this.cuentaOrigen = cuentaOrigen;
-        this.cuentaDestino = cuentaDestino;
-    }
 }

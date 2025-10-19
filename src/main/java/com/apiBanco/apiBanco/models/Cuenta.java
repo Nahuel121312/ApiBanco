@@ -1,9 +1,7 @@
 package com.apiBanco.apiBanco.models;
 
 import com.apiBanco.apiBanco.models.enums.TipoCuenta;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,32 +23,26 @@ public class Cuenta {
 
     private String numeroDeCuenta;
     private double saldo;
+    private String alias;
+    private boolean estado;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
     private LocalDateTime fechaApertura;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "cliente_id")
-    @JsonBackReference(value = "cliente-cuentas")
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "cuentaOrigen", cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "cuenta-transacciones-enviadas")
-    private List<Transaccion> transaccionesEnviadas = new ArrayList<>();
+    @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Prestamo> prestamos = new ArrayList<>();
 
     @OneToMany(mappedBy = "cuentaDestino", cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "cuenta-transacciones-recibidas")
-    private List<Transaccion> transaccionesRecibidas = new ArrayList<>();
+    @JsonManagedReference(value = "cuenta-transacciones")
+    private List<Transaccion> transacciones = new ArrayList<>();
 
-    public Cuenta (TipoCuenta tipoCuenta, String numeroDeCuenta, double saldo, Cliente cliente){
-        this.tipoCuenta = tipoCuenta;
-        this.numeroDeCuenta = numeroDeCuenta;
-        this.saldo = saldo;
-        this.cliente = cliente;
-    }
+    @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "cuenta-tarjetas")
+    private List<Tarjeta> tarjetas = new ArrayList<>();
 
-    @PrePersist
-    public void prePersist(){
-        this.fechaApertura = LocalDateTime.now();
-    }
+
 }
