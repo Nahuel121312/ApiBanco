@@ -8,7 +8,9 @@ import com.apiBanco.apiBanco.models.enums.TipoCuenta;
 import com.apiBanco.apiBanco.services.ClienteManager;
 import com.apiBanco.apiBanco.services.ClienteService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,9 +30,13 @@ public class ClienteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ClienteResponseDTO>> listarClientes(){
-        List<ClienteResponseDTO> listaClientesDTO = clienteService.listarClientes();
-        return ResponseEntity.ok(listaClientesDTO);
+    public ResponseEntity<Page<ClienteResponseDTO>> listarClientes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false)String nombre){
+
+        Page<ClienteResponseDTO> clientesPage = clienteService.listarClientes(page, size,nombre);
+        return ResponseEntity.ok(clientesPage);
     }
 
     @GetMapping("/{id}")
@@ -51,6 +57,7 @@ public class ClienteController {
         return ResponseEntity.ok(clienteResponseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarCliente(@PathVariable Long id) {
         clienteService.eliminarCliente(id);
