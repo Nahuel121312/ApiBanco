@@ -17,6 +17,7 @@ public class CuentaResponseDTO {
     private String numeroDeCuenta;
     private String alias;
     private double saldo;
+    private Long idCuenta;
 
     private List<PrestamoResponseDTO> listaPrestamosDto;
     private List<TarjetaResponseDTO> listaTarjetasDto;
