@@ -1,5 +1,6 @@
 package com.apiBanco.apiBanco.dtos.cliente;
 
+import com.apiBanco.apiBanco.models.enums.Rol;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,4 +29,10 @@ public class ClienteRequestDTO {
     @NotBlank(message = "El telefono no puede estar vacio")
     @Size(min = 10, message = "El telefono debe tener 10 caracteres")
     private String telefono;
+    @NotBlank(message = "La contraseña no puede estar vacia")
+    private String password;
+    @NotBlank(message = "El username no puede estar vacio")
+    private String username;
+
+    private Rol rol;
 }
