@@ -14,4 +14,5 @@ public class TarjetaRequestDTO {
     @NotNull(message = "El tipo de tarjeta no puede ser nulo")
     private TipoTarjeta tipoTarjeta;
 
+
 }
