@@ -5,12 +5,15 @@ import com.apiBanco.apiBanco.dtos.tarjeta.TarjetaResponseDTO;
 import com.apiBanco.apiBanco.models.Cliente;
 import com.apiBanco.apiBanco.models.Prestamo;
 import com.apiBanco.apiBanco.models.Tarjeta;
+import com.apiBanco.apiBanco.models.enums.TipoTarjeta;
 import com.apiBanco.apiBanco.services.ClienteService;
 import com.apiBanco.apiBanco.services.PrestamoService;
 import com.apiBanco.apiBanco.services.TarjetaService;
 import jakarta.validation.Valid;
 import org.apache.coyote.Response;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +29,12 @@ public class TarjetaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TarjetaResponseDTO>> listarTarjetas(){
-        List<TarjetaResponseDTO> listaTarjetas = tarjetaService.listarTarjetas();
+    public ResponseEntity<Page<TarjetaResponseDTO>> listarTarjetas(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false)TipoTarjeta tipoTarjeta){
+
+        Page<TarjetaResponseDTO> listaTarjetas = tarjetaService.listarTarjetas(page, size, tipoTarjeta);
         return ResponseEntity.ok(listaTarjetas);
     }
 
@@ -49,6 +56,7 @@ public class TarjetaController {
         return ResponseEntity.ok(tarjetaResponse);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarTarjeta(@PathVariable Long id){
         tarjetaService.eliminarTarjeta(id);
