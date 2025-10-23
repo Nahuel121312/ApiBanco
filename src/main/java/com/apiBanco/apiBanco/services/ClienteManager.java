@@ -13,6 +13,8 @@ import com.apiBanco.apiBanco.models.Tarjeta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ClienteManager {
     private final ClienteService clienteService;
@@ -34,9 +36,10 @@ public class ClienteManager {
         ClienteResponseDTO clienteResponse = clienteService.crearCliente(clienteRequest);
 
         CuentaResponseDTO cuentaResponse = cuentaService.crearCuenta(clienteResponse.getClienteId());
-        tarjetaService.crearTarjetaConCuenta(cuentaResponse.getId());
+        TarjetaResponseDTO tarjetaResponse = tarjetaService.crearTarjetaConCuenta(cuentaResponse.getId());
 
         clienteResponse.setCuentaDto(cuentaResponse);
+        cuentaResponse.setListaTarjetasDto(List.of(tarjetaResponse));
         return clienteResponse;
     }
 }
