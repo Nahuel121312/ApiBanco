@@ -12,7 +12,6 @@ public class PrestamoRequestDTO {
     private double monto;
 
     @NotNull(message = "Las cuotas no pueden ser nulas")
-    @Size(min = 1, max = 12, message = "Las cuotas tienen que ser entre 1 y 12 ")
     private Long cuotas;
 
     @NotNull(message = "El id no puede ser nulo")
