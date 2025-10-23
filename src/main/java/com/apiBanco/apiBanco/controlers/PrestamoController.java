@@ -4,12 +4,15 @@ import com.apiBanco.apiBanco.dtos.prestamo.PrestamoRequestDTO;
 import com.apiBanco.apiBanco.dtos.prestamo.PrestamoResponseDTO;
 import com.apiBanco.apiBanco.models.Cliente;
 import com.apiBanco.apiBanco.models.Prestamo;
+import com.apiBanco.apiBanco.models.enums.TipoEstado;
 import com.apiBanco.apiBanco.services.ClienteService;
 import com.apiBanco.apiBanco.services.PrestamoService;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import org.apache.coyote.Response;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,15 +28,20 @@ public class PrestamoController {
     }
 
     @GetMapping
-    public List<PrestamoResponseDTO> listarPrestamos(){
-        return prestamoService.listarPrestamos();
+    public ResponseEntity<Page<PrestamoResponseDTO>> listarPrestamos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) TipoEstado tipoEstado){
+
+        Page<PrestamoResponseDTO> listaPrestamos = prestamoService.listarPrestamos(page, size, tipoEstado);
+
+        return ResponseEntity.ok(listaPrestamos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Prestamo> obtenerPrestamo(@PathVariable Long id){
-        return prestamoService.buscarPrestamo(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PrestamoResponseDTO> obtenerPrestamo(@PathVariable Long id){
+        PrestamoResponseDTO prestamoResponse = prestamoService.buscarPrestamo(id);
+        return ResponseEntity.ok(prestamoResponse);
     }
 
     @PostMapping
@@ -50,6 +58,7 @@ public class PrestamoController {
         return ResponseEntity.ok(prestamoResponse);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarPrestamo(@PathVariable Long id){
         prestamoService.eliminarPrestamo(id);
