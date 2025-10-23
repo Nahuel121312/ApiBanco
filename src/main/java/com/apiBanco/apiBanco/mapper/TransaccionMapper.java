@@ -16,8 +16,8 @@ public class TransaccionMapper {
         dto.setDetalle(transaccion.getDetalle());
         dto.setTipoTransaccion(transaccion.getTipoTransaccion());
         dto.setCuentaOrigenId(transaccion.getCuentaOrigen().getIdCuenta());
-        dto.setCuentaOrigenId(transaccion.getCuentaDestino().getIdCuenta());
-
+        dto.setCuentaDestinoId(transaccion.getCuentaDestino().getIdCuenta());
+        dto.setEnviada(transaccion.isEnviada());
         return dto;
     }
 
