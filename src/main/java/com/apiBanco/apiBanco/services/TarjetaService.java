@@ -6,9 +6,14 @@ import com.apiBanco.apiBanco.mapper.PrestamoMapper;
 import com.apiBanco.apiBanco.mapper.TarjetaMapper;
 import com.apiBanco.apiBanco.models.Cuenta;
 import com.apiBanco.apiBanco.models.Tarjeta;
+import com.apiBanco.apiBanco.models.enums.TipoEstado;
 import com.apiBanco.apiBanco.models.enums.TipoTarjeta;
 import com.apiBanco.apiBanco.repositories.CuentaRepository;
 import com.apiBanco.apiBanco.repositories.TarjetaRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -31,16 +36,23 @@ public class TarjetaService {
     }
 
     //Listar tarjetas
-    public List<TarjetaResponseDTO> listarTarjetas(){
-        return tarjetaRepository.existsByEstadoTrue()
-                .stream().map(tarjetaMapper::toResponse)
-                .toList();
+    public Page<TarjetaResponseDTO> listarTarjetas(int page, int size, TipoTarjeta tipoTarjeta){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Tarjeta> listaTarjetas;
+
+        if(tipoTarjeta != null){
+            listaTarjetas = tarjetaRepository.findByTipoTarjetaAndEstadoTrue(tipoTarjeta, pageable);
+        }else {
+            listaTarjetas = tarjetaRepository.findByEstadoTrue(pageable);
+        }
+
+        return listaTarjetas.map(tarjetaMapper::toResponse);
     }
 
     //Buscar por id
     public TarjetaResponseDTO buscarPorId(Long id){
         Tarjeta tarjeta = tarjetaRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Tarjeta no encontrada"));
+                .orElseThrow(()-> new EntityNotFoundException("Tarjeta con ID: "+ id +" no encontrado"));
         return tarjetaMapper.toResponse(tarjeta);
     }
 
@@ -53,8 +65,10 @@ public class TarjetaService {
         tarjeta.setLimiteCredito(1000000);
         tarjeta.setFechaVencimiento(LocalDate.now());
         tarjeta.setEstado(true);
-        Cuenta cuenta = new Cuenta();
-        cuenta.setIdCuenta(cuenta.getIdCuenta());
+
+        Long cuentaId = tarjetaRequest.getCuentaId();
+        Cuenta cuenta = cuentaRepository.findById(cuentaId)
+                        .orElseThrow(()-> new EntityNotFoundException("Cuenta con ID:"+ cuentaId +" no encontrada"));
         tarjeta.setCuenta(cuenta);
 
         tarjetaRepository.save(tarjeta);
@@ -62,36 +76,40 @@ public class TarjetaService {
     }
 
     //Crear TarjetaconCuenta
-    public void crearTarjetaConCuenta (Long cuentaId){
+    public TarjetaResponseDTO crearTarjetaConCuenta (Long cuentaId){
         Cuenta cuenta = cuentaRepository.findById(cuentaId)
-                .orElseThrow(()-> new RuntimeException("Cuenta no encontrada"));
+                .orElseThrow(()-> new EntityNotFoundException("Cuenta con ID:"+ cuentaId +" no encontrada"));
 
         Tarjeta tarjeta = new Tarjeta();
         tarjeta.setCuenta(cuenta);
         tarjeta.setTipoTarjeta(TipoTarjeta.DEBITO);
         tarjeta.setNumeroDeTarjeta(generarNumeroTarjeta());
         tarjeta.setLimiteCredito(100000);
+        tarjeta.setFechaVencimiento(LocalDate.now().plusMonths(12).plusYears(3));
+        tarjeta.setEstado(true);
 
         tarjetaRepository.save(tarjeta);
+
+        return tarjetaMapper.toResponse(tarjeta);
     }
 
     //Eliminar Tarjeta
     public void eliminarTarjeta(Long id){
         Tarjeta tarjeta = tarjetaRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Tarjeta no encontrada"));
+                .orElseThrow(()-> new EntityNotFoundException("Tarjeta con ID: "+ id +" no encontrado"));
         tarjeta.setEstado(false);
+        tarjetaRepository.save(tarjeta);
     }
 
     //ActualizarTarjeta
     public TarjetaResponseDTO actualizarTarjeta(Long id, TarjetaRequestDTO tarjetaRequest){
         Tarjeta nueva = tarjetaRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Tarjeta no encontrada"));
+                .orElseThrow(()-> new EntityNotFoundException("Tarjeta con ID: "+ id +" no encontrado"));
 
 
         Cuenta cuenta = new Cuenta();
         cuenta.setIdCuenta(tarjetaRequest.getCuentaId());
         nueva.setCuenta(cuenta);
-
         nueva.setLimiteCredito(1000000);
         tarjetaRepository.save(nueva);
 
