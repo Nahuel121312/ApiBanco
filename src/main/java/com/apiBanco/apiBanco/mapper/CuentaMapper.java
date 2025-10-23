@@ -27,6 +27,7 @@ public class CuentaMapper {
          dto.setTipoCuenta(cuenta.getTipoCuenta());
          dto.setNumeroDeCuenta(cuenta.getNumeroDeCuenta());
          dto.setAlias(cuenta.getAlias());
+         dto.setIdCuenta(cuenta.getIdCuenta());
          dto.setListaTransaccionesDto(cuenta.getTransacciones().stream()
                  .map(transaccionMapper::toResponse)
                  .toList());
