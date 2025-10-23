@@ -16,6 +16,7 @@ public class Transaccion {
     private Long idTransaccion;
     private LocalDateTime fecha;
     private boolean estado;
+    private boolean enviada = false;
 
     @Enumerated(EnumType.STRING)
     private TipoTransaccion tipoTransaccion;
