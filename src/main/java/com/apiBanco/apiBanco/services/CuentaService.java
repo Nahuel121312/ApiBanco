@@ -8,9 +8,14 @@ import com.apiBanco.apiBanco.models.Cuenta;
 import com.apiBanco.apiBanco.models.enums.TipoCuenta;
 import com.apiBanco.apiBanco.repositories.ClienteRepository;
 import com.apiBanco.apiBanco.repositories.CuentaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -29,23 +34,33 @@ public class CuentaService {
     }
 
     //Listar cuentas
-    public List<CuentaResponseDTO> listarCuentas(){
-        return cuentaRepository.findAll()
-                .stream().map(cuentaMapper::toResponseDTO)
-                .toList();
+    public Page<CuentaResponseDTO> listarCuentas(int page, int size, String numeroDeCuenta){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Cuenta> cuentas;
+        if (numeroDeCuenta != null && !numeroDeCuenta.isEmpty()) {
+
+            cuentas = cuentaRepository.findByNumeroDeCuentaContainingAndEstadoTrue(numeroDeCuenta, pageable);
+        }else {
+            cuentas = cuentaRepository.findByEstadoTrue(pageable);
+        }
+        return cuentas.map(cuentaMapper::toResponseDTO);
     }
 
     //Buscar por id
     public CuentaResponseDTO buscarCuentaPorId(Long id){
         Cuenta cuenta = cuentaRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Cuenta no encontrada"));
+                .orElseThrow(()-> new EntityNotFoundException("Cuenta con ID: "+ id +" no encontrado"));
         return cuentaMapper.toResponseDTO(cuenta);
     }
 
     //Crear Cuenta
-    public CuentaResponseDTO crearCuenta(Long clienteId){
-        Cliente cliente = clienteRepository.findById(clienteId)
-                .orElseThrow(()-> new RuntimeException("Cliente no encontrado"));
+    public CuentaResponseDTO crearCuenta(Long id){
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("Cuenta con ID: "+ id +" no encontrado"));
+
+        if(cuentaRepository.existsByCliente_ClienteId(id)){
+            throw new RuntimeException("El cliente con ID: "+ id +"ya tiene una cuenta asociada");
+        }
 
         Cuenta cuenta = new Cuenta();
         cuenta.setCliente(cliente);
@@ -53,22 +68,25 @@ public class CuentaService {
         cuenta.setTipoCuenta(TipoCuenta.CAJA_AHORRO);
         cuenta.setSaldo(0.0);
         cuenta.setAlias(generarAlias());
+        cuenta.setEstado(true);
+        cuenta.setFechaApertura(LocalDateTime.now());
+
 
         cuentaRepository.save(cuenta);
-
         return cuentaMapper.toResponseDTO(cuenta);
     }
 
     //Eliminar Cuenta
     public void eliminarCuenta(Long id){
-        Cuenta cuenta = cuentaRepository.findById(id).orElseThrow(()-> new RuntimeException("Cuenta no encontrada"));
+        Cuenta cuenta = cuentaRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("Cuenta con ID: "+ id +" no encontrado"));
         cuenta.setEstado(false);
     }
 
     //Actualizar Cuenta
     public CuentaResponseDTO actualizarCuenta(Long id, CuentaRequestDTO cuentaRequest){
         Cuenta nueva = cuentaRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
+                        .orElseThrow(() -> new EntityNotFoundException("Cuenta con ID: "+ id +" no encontrado"));
 
         nueva.setSaldo(cuentaRequest.getSaldo());
         nueva.setAlias(cuentaRequest.getAlias());
