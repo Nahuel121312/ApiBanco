@@ -5,16 +5,12 @@ import com.apiBanco.apiBanco.dtos.cliente.ClienteResponseDTO;
 import com.apiBanco.apiBanco.dtos.cuenta.CuentaResponseDTO;
 import com.apiBanco.apiBanco.dtos.tarjeta.TarjetaResponseDTO;
 import com.apiBanco.apiBanco.mapper.ClienteMapper;
-import com.apiBanco.apiBanco.mapper.CuentaMapper;
-import com.apiBanco.apiBanco.mapper.TarjetaMapper;
-import com.apiBanco.apiBanco.models.Cliente;
-import com.apiBanco.apiBanco.models.Cuenta;
-import com.apiBanco.apiBanco.models.Tarjeta;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Slf4j
 @Service
 public class ClienteManager {
     private final ClienteService clienteService;
@@ -32,6 +28,7 @@ public class ClienteManager {
     }
 
     public ClienteResponseDTO crearClienteConCuentaYTarjera(ClienteRequestDTO clienteRequest){
+        log.info("Inicio del proceso de registro del cliente con username:{}", clienteRequest.getUsername());
         //Crear Cliente
         ClienteResponseDTO clienteResponse = clienteService.crearCliente(clienteRequest);
 
@@ -40,6 +37,7 @@ public class ClienteManager {
 
         clienteResponse.setCuentaDto(cuentaResponse);
         cuentaResponse.setListaTarjetasDto(List.of(tarjetaResponse));
+        log.info("Registro exitoso para cliente ID:{}", clienteResponse.getClienteId());
         return clienteResponse;
     }
 }

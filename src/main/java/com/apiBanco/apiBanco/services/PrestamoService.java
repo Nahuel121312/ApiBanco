@@ -3,21 +3,21 @@ package com.apiBanco.apiBanco.services;
 import com.apiBanco.apiBanco.dtos.prestamo.PrestamoRequestDTO;
 import com.apiBanco.apiBanco.dtos.prestamo.PrestamoResponseDTO;
 import com.apiBanco.apiBanco.mapper.PrestamoMapper;
-import com.apiBanco.apiBanco.models.Cliente;
 import com.apiBanco.apiBanco.models.Cuenta;
 import com.apiBanco.apiBanco.models.Prestamo;
 import com.apiBanco.apiBanco.models.enums.TipoEstado;
 import com.apiBanco.apiBanco.repositories.CuentaRepository;
 import com.apiBanco.apiBanco.repositories.PrestamoRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+
+
+@Slf4j
 @Service
 public class PrestamoService {
 
@@ -86,7 +86,14 @@ public class PrestamoService {
             cuentaRepository.save(cuenta);
         }
 
-        prestamoRepository.save(prestamo);
+        try{
+            prestamoRepository.save(prestamo);
+            log.info("Prestamo para Cuenta ID: {}", prestamo.getCuenta().getIdCuenta());
+        }catch (Exception e){
+            log.error("Error al guardar el prestamo para cuenta, ID: {}, {}", prestamo.getCuenta().getIdCuenta(), e.getMessage(), e);
+            throw new RuntimeException("No se pudo guardar el prestamo");
+        }
+
         return prestamoMapper.toResponse(prestamo);
     }
 

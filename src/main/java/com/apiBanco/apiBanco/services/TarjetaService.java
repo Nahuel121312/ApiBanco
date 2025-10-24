@@ -2,25 +2,22 @@ package com.apiBanco.apiBanco.services;
 
 import com.apiBanco.apiBanco.dtos.tarjeta.TarjetaRequestDTO;
 import com.apiBanco.apiBanco.dtos.tarjeta.TarjetaResponseDTO;
-import com.apiBanco.apiBanco.mapper.PrestamoMapper;
 import com.apiBanco.apiBanco.mapper.TarjetaMapper;
 import com.apiBanco.apiBanco.models.Cuenta;
 import com.apiBanco.apiBanco.models.Tarjeta;
-import com.apiBanco.apiBanco.models.enums.TipoEstado;
 import com.apiBanco.apiBanco.models.enums.TipoTarjeta;
 import com.apiBanco.apiBanco.repositories.CuentaRepository;
 import com.apiBanco.apiBanco.repositories.TarjetaRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
+@Slf4j
 @Service
 public class TarjetaService {
 
@@ -58,8 +55,9 @@ public class TarjetaService {
 
     //Crear tarjeta
     public TarjetaResponseDTO crearTarjeta (TarjetaRequestDTO tarjetaRequest){
-        Tarjeta tarjeta = new Tarjeta();
+        log.info("Intentando crear Tarjeta para Cuenta ID:{}", tarjetaRequest.getCuentaId());
 
+        Tarjeta tarjeta = new Tarjeta();
         tarjeta.setNumeroDeTarjeta(generarNumeroTarjeta());
         tarjeta.setTipoTarjeta(tarjetaRequest.getTipoTarjeta());
         tarjeta.setLimiteCredito(1000000);
@@ -71,12 +69,20 @@ public class TarjetaService {
                         .orElseThrow(()-> new EntityNotFoundException("Cuenta con ID:"+ cuentaId +" no encontrada"));
         tarjeta.setCuenta(cuenta);
 
-        tarjetaRepository.save(tarjeta);
+        try{
+            tarjetaRepository.save(tarjeta);
+            log.info("Tarjeta creada correctamente para Cuenta ID:{}",tarjeta.getCuenta().getIdCuenta());
+        }catch (Exception e){
+            log.error("Error al crear la tarjeta para Cuenta ID:{}, {}", tarjeta.getCuenta().getIdCuenta(), e.getMessage(), e);
+            throw new RuntimeException("No se pudo guardar la tarjeta");
+        }
         return tarjetaMapper.toResponse(tarjeta);
     }
 
     //Crear TarjetaconCuenta
     public TarjetaResponseDTO crearTarjetaConCuenta (Long cuentaId){
+        log.info("Intentando crear Tarjeta para Cuenta ID: {}", cuentaId);
+
         Cuenta cuenta = cuentaRepository.findById(cuentaId)
                 .orElseThrow(()-> new EntityNotFoundException("Cuenta con ID:"+ cuentaId +" no encontrada"));
 
@@ -88,8 +94,13 @@ public class TarjetaService {
         tarjeta.setFechaVencimiento(LocalDate.now().plusMonths(12).plusYears(3));
         tarjeta.setEstado(true);
 
-        tarjetaRepository.save(tarjeta);
-
+        try{
+            tarjetaRepository.save(tarjeta);
+            log.info("Tarjeta creada correctamente para Cuenta ID:{}",tarjeta.getCuenta().getIdCuenta());
+        }catch (Exception e){
+            log.error("Error al crear la tarjeta para Cuenta ID:{}, {}", tarjeta.getCuenta().getIdCuenta(), e.getMessage(), e);
+            throw new RuntimeException("No se pudo guardar la tarjeta");
+        }
         return tarjetaMapper.toResponse(tarjeta);
     }
 

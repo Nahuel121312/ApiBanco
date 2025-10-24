@@ -7,6 +7,7 @@ import com.apiBanco.apiBanco.models.Cliente;
 import com.apiBanco.apiBanco.models.enums.Rol;
 import com.apiBanco.apiBanco.repositories.ClienteRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 public class ClienteService {
 
@@ -51,12 +53,21 @@ public class ClienteService {
 
     //Crear Cliente
     public ClienteResponseDTO crearCliente(ClienteRequestDTO clienteRequest){
+        log.info("Intentando crear Cliente con username {}", clienteRequest.getUsername());
+
         Cliente cliente = clienteMapper.toEntity(clienteRequest);
         cliente.setFechaRegistro(LocalDateTime.now());
         cliente.setEstado(true);
         cliente.setPassword(passwordEncoder.encode(clienteRequest.getPassword()));
         cliente.setRol(Rol.ADMIN);
-        clienteRepository.save(cliente);
+
+        try {
+            clienteRepository.save(cliente);
+            log.info("Cliente guardado correctamente, ID: {}", cliente.getClienteId());
+        }catch (Exception e){
+            log.error("Error al guardar el cliente con ID: {}: {}", cliente.getClienteId(), e.getMessage(), e);
+            throw new RuntimeException("No se pudo guardar el cliente");
+        }
         return clienteMapper.toResponseDTO(cliente);
     }
 
@@ -83,6 +94,13 @@ public class ClienteService {
                 .orElseThrow(()-> new EntityNotFoundException("Cliente con ID: "+ id +" no encontrado"));
         cliente.setEstado(false);
         clienteRepository.save(cliente);
+    }
+
+    //Obtener cliente por username
+    public ClienteResponseDTO obtenerClientePorUsername(String username){
+        Cliente cliente = clienteRepository.findByUsername(username)
+                .orElseThrow(()-> new EntityNotFoundException("Cliente con username"+ username + " no encontrado"));
+        return clienteMapper.toResponseDTO(cliente);
     }
 
 

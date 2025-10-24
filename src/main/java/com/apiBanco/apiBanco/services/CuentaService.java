@@ -9,17 +9,15 @@ import com.apiBanco.apiBanco.models.enums.TipoCuenta;
 import com.apiBanco.apiBanco.repositories.ClienteRepository;
 import com.apiBanco.apiBanco.repositories.CuentaRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
+@Slf4j
 @Service
 public class CuentaService {
 
@@ -71,8 +69,14 @@ public class CuentaService {
         cuenta.setEstado(true);
         cuenta.setFechaApertura(LocalDateTime.now());
 
+        try{
+            cuentaRepository.save(cuenta);
+            log.info("Cuenta para Cliente con ID: {} creada correctamente", cuenta.getCliente().getClienteId());
+        }catch (Exception e){
+            log.error("Error al guardar la cuenta para cliente con ID: {}: {}", cuenta.getCliente().getClienteId(), e.getMessage(), e);
+            throw new RuntimeException("No se pudo guardar la cuenta");
+        }
 
-        cuentaRepository.save(cuenta);
         return cuentaMapper.toResponseDTO(cuenta);
     }
 
@@ -94,6 +98,16 @@ public class CuentaService {
         Cuenta cuentaActualizada = cuentaRepository.save(nueva);
 
         return cuentaMapper.toResponseDTO(cuentaActualizada);
+    }
+
+    public CuentaResponseDTO obtenerCuentaDeUsuario(String username) {
+        Cliente cliente = clienteRepository.findByUsername(username)
+                .orElseThrow(()-> new EntityNotFoundException("Cliente no encontrado"));
+        System.out.println("Buscando cliente con username" + username);
+
+        Cuenta cuenta = cuentaRepository.findByCliente(cliente).orElseThrow(()-> new EntityNotFoundException("Cuenta no encontrada"));
+
+        return cuentaMapper.toResponseDTO(cuenta);
     }
 
     //Generar numero de cuenta aleatorio

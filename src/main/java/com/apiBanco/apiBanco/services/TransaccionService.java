@@ -9,18 +9,15 @@ import com.apiBanco.apiBanco.models.enums.TipoTransaccion;
 import com.apiBanco.apiBanco.repositories.CuentaRepository;
 import com.apiBanco.apiBanco.repositories.TransaccionRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.cglib.core.Local;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.swing.undo.CannotUndoException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+
+@Slf4j
 @Service
 public class TransaccionService {
 
@@ -59,6 +56,7 @@ public class TransaccionService {
     //Crear Transaccion
     @Transactional
     public TransaccionResponseDTO crearTransaccion(TransaccionRequestDTO transaccionRequest){
+        log.info("Intentando crear Transaccion para Cuenta ID:{}", transaccionRequest.getIdCuentaOrigen());
 
         Cuenta origen = cuentaRepository.findById(transaccionRequest.getIdCuentaOrigen())
                 .orElseThrow(()->new EntityNotFoundException("Cuenta con ID:"+ transaccionRequest.getIdCuentaOrigen() +" no encontrada"));
@@ -80,8 +78,13 @@ public class TransaccionService {
         transaccion.setCuentaDestino(destino);
         transaccion.setEstado(true);
 
-
-        transaccionRepository.save(transaccion);
+        try{
+            transaccionRepository.save(transaccion);
+            log.info("Transaccion guardada correctamente para Cuenta ID:{}", transaccion.getCuentaDestino().getIdCuenta());
+        }catch (Exception e ){
+            log.error("Error al guardar la transaccion para Cuenta ID:{}, {}", transaccion.getCuentaOrigen().getIdCuenta(), e.getMessage(), e);
+            throw new RuntimeException("No se pudo guardar la transaccion");
+        }
 
 
         return transaccionMapper.toResponse(transaccion);
