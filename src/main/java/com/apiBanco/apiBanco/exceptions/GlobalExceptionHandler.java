@@ -1,8 +1,6 @@
 package com.apiBanco.apiBanco.exceptions;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

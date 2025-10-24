@@ -1,11 +1,9 @@
 package com.apiBanco.apiBanco.dtos.cliente;
 
 import com.apiBanco.apiBanco.dtos.cuenta.CuentaResponseDTO;
-import com.apiBanco.apiBanco.dtos.tarjeta.TarjetaResponseDTO;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
 
 @Getter @Setter
 public class ClienteResponseDTO {

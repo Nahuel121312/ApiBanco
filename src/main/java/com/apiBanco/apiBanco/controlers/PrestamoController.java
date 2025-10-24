@@ -2,20 +2,14 @@ package com.apiBanco.apiBanco.controlers;
 
 import com.apiBanco.apiBanco.dtos.prestamo.PrestamoRequestDTO;
 import com.apiBanco.apiBanco.dtos.prestamo.PrestamoResponseDTO;
-import com.apiBanco.apiBanco.models.Cliente;
-import com.apiBanco.apiBanco.models.Prestamo;
 import com.apiBanco.apiBanco.models.enums.TipoEstado;
-import com.apiBanco.apiBanco.services.ClienteService;
 import com.apiBanco.apiBanco.services.PrestamoService;
 import jakarta.validation.Valid;
-import lombok.Getter;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/prestamos")

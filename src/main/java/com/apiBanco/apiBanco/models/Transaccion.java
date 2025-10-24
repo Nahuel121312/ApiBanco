@@ -14,15 +14,16 @@ public class Transaccion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTransaccion;
+
     private LocalDateTime fecha;
     private boolean estado;
     private boolean enviada = false;
+    private double monto;
+    private String detalle;
 
     @Enumerated(EnumType.STRING)
     private TipoTransaccion tipoTransaccion;
 
-    private double monto;
-    private String detalle;
     @ManyToOne
     @JoinColumn(name="cuenta_origen_id")
     @JsonBackReference("cuenta-transacciones-enviadas")

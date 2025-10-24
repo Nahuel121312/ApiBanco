@@ -1,8 +1,6 @@
 package com.apiBanco.apiBanco.dtos.prestamo;
 
-import com.apiBanco.apiBanco.models.enums.TipoEstado;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 

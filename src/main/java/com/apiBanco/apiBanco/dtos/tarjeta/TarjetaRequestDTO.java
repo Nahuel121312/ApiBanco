@@ -1,6 +1,5 @@
 package com.apiBanco.apiBanco.dtos.tarjeta;
 
-import com.apiBanco.apiBanco.models.enums.TipoEstado;
 import com.apiBanco.apiBanco.models.enums.TipoTarjeta;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

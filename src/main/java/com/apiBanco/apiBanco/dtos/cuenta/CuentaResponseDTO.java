@@ -1,6 +1,5 @@
 package com.apiBanco.apiBanco.dtos.cuenta;
 
-import com.apiBanco.apiBanco.dtos.prestamo.PrestamoRequestDTO;
 import com.apiBanco.apiBanco.dtos.prestamo.PrestamoResponseDTO;
 import com.apiBanco.apiBanco.dtos.tarjeta.TarjetaResponseDTO;
 import com.apiBanco.apiBanco.dtos.transaccion.TransaccionResponseDTO;

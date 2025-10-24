@@ -2,21 +2,14 @@ package com.apiBanco.apiBanco.controlers;
 
 import com.apiBanco.apiBanco.dtos.tarjeta.TarjetaRequestDTO;
 import com.apiBanco.apiBanco.dtos.tarjeta.TarjetaResponseDTO;
-import com.apiBanco.apiBanco.models.Cliente;
-import com.apiBanco.apiBanco.models.Prestamo;
-import com.apiBanco.apiBanco.models.Tarjeta;
 import com.apiBanco.apiBanco.models.enums.TipoTarjeta;
-import com.apiBanco.apiBanco.services.ClienteService;
-import com.apiBanco.apiBanco.services.PrestamoService;
 import com.apiBanco.apiBanco.services.TarjetaService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/tarjetas")

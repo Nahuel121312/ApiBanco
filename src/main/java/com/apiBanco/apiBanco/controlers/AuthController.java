@@ -4,15 +4,11 @@ import com.apiBanco.apiBanco.dtos.cliente.ClienteRequestDTO;
 import com.apiBanco.apiBanco.dtos.cliente.ClienteResponseDTO;
 import com.apiBanco.apiBanco.dtos.login.LoginRequestDTO;
 import com.apiBanco.apiBanco.dtos.login.LoginResponseDTO;
-import com.apiBanco.apiBanco.models.Cliente;
 import com.apiBanco.apiBanco.security.AuthService;
-import com.apiBanco.apiBanco.services.ClienteService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {

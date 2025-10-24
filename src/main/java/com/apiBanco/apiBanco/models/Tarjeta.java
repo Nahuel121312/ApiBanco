@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 @Entity
 @Getter @Setter @NoArgsConstructor
 public class Tarjeta {
@@ -18,14 +17,13 @@ public class Tarjeta {
     private Long idTarjeta;
     private String numeroDeTarjeta;
     private boolean estado;
+    private double limiteCredito;
 
     @Enumerated(EnumType.STRING)
     private TipoTarjeta tipoTarjeta;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM")
     private LocalDate fechaVencimiento;
-
-    private double limiteCredito;
 
     @ManyToOne
     @JoinColumn(name = "cuenta_id")

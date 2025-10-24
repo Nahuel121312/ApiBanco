@@ -1,6 +1,5 @@
 package com.apiBanco.apiBanco.dtos.tarjeta;
 
-import com.apiBanco.apiBanco.dtos.cuenta.CuentaResponseDTO;
 import com.apiBanco.apiBanco.models.enums.TipoTarjeta;
 import lombok.Getter;
 import lombok.Setter;
