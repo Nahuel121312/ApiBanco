@@ -19,5 +19,4 @@ public interface CuentaRepository extends JpaRepository<Cuenta, Long> {
 
     Page<Cuenta> findByNumeroDeCuentaContainingAndEstadoTrue(String numeroDeCuenta, Pageable pageable);
 
-    Optional<Cuenta> findByCliente(Cliente cliente);
 }

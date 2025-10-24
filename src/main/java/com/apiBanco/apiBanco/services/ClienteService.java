@@ -96,12 +96,6 @@ public class ClienteService {
         clienteRepository.save(cliente);
     }
 
-    //Obtener cliente por username
-    public ClienteResponseDTO obtenerClientePorUsername(String username){
-        Cliente cliente = clienteRepository.findByUsername(username)
-                .orElseThrow(()-> new EntityNotFoundException("Cliente con username"+ username + " no encontrado"));
-        return clienteMapper.toResponseDTO(cliente);
-    }
 
 
 }

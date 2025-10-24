@@ -2,19 +2,14 @@ package com.apiBanco.apiBanco.controlers;
 
 import com.apiBanco.apiBanco.dtos.cliente.ClienteRequestDTO;
 import com.apiBanco.apiBanco.dtos.cliente.ClienteResponseDTO;
-import com.apiBanco.apiBanco.models.Cliente;
-import com.apiBanco.apiBanco.models.Prestamo;
-import com.apiBanco.apiBanco.models.enums.TipoCuenta;
 import com.apiBanco.apiBanco.services.ClienteManager;
 import com.apiBanco.apiBanco.services.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController

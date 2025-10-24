@@ -100,15 +100,6 @@ public class CuentaService {
         return cuentaMapper.toResponseDTO(cuentaActualizada);
     }
 
-    public CuentaResponseDTO obtenerCuentaDeUsuario(String username) {
-        Cliente cliente = clienteRepository.findByUsername(username)
-                .orElseThrow(()-> new EntityNotFoundException("Cliente no encontrado"));
-        System.out.println("Buscando cliente con username" + username);
-
-        Cuenta cuenta = cuentaRepository.findByCliente(cliente).orElseThrow(()-> new EntityNotFoundException("Cuenta no encontrada"));
-
-        return cuentaMapper.toResponseDTO(cuenta);
-    }
 
     //Generar numero de cuenta aleatorio
     private String generarNumeroCuenta(){
